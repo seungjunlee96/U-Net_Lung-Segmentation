@@ -14,7 +14,7 @@ U-Net is a convolutional neural network architecture for fast and precise segmen
 ![u-net-architecture](./u-net-architecture.png)<br>
 U-net architecture (example for 32x32 pixels in the lowest resolution). Each blue box corresponds to a multi-channel feature map. The number of channels is denoted on top of the box. The x-y-size is provided at the lower left edge of the box. White boxes represent copied feature maps. The arrows denote the different operations.<br>
 <br>
-
+![UnetExample](./UnetExample.png)
 
 ### Contracting path (Downsampling)
 It consists of the repeated application of :<br>
@@ -24,7 +24,7 @@ It consists of the repeated application of :<br>
 
 
 ### Expansive path (Upsampling)
-It consists of the repeated application of :<br>
+Sequence of **up-convolutions** and **concatenation** with high-resolution features from contracting path :<br>
 - **2x2 convolution ("up-convolution")** that halves the number of feature channels
 - A **concatenation** with the correspondingly cropped feature map from the contracting path
 - Two **3x3 convolutions**

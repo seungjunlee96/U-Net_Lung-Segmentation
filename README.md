@@ -33,3 +33,12 @@ select the input tile size such that all 2x2 max-pooling operations are applied 
 - **excessive data augmentation** by applying **elastic deformations** which used to be the most common variation in tissue and realistic deformations can be simulated efficiently.
 - The use of **a weighted loss**, where the separating background labels between **touching cells** of the same class
 
+
+## Data Augmentations
+- shift
+- rotation
+- random elastic deformations:<br>
+  smooth deformations using random displacement vectors on a coarse 3 by 3 grid.<br> 
+  The displacements are sampled from a Gaussian distribution with 10 pixels standard deviation.<br>
+  Per-pixel displacements are then computed using bicubic interpolation
+- Drop-out

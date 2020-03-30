@@ -1,5 +1,6 @@
 # U-Net_Lung-Segmentation
 Application of U-Net in Lung Segmentation<br>
+This Implementation Achived **96% accuracy** in Lung Segmentation with U-Net
 ![LungSeg](./Figure_1.png)
 <br>
 # Dataset
@@ -71,3 +72,28 @@ Important trick: select the input tile size such that all 2x2 max-pooling operat
   The displacements are sampled from a Gaussian distribution with 10 pixels standard deviation.<br>
   Per-pixel displacements are then computed using bicubic interpolation.![ElasticDeform](./ElasticDeformation.png)
 - Drop-out
+
+
+## Loss Function
+Challenge in medical image<br>
+: The anatomy of interest occupies **only a very small region** of the scan, which causes the learning process to **get trapped in local minima** of loss function yielding a network whose predictions are **strongly biased towards background**.<br>
+As a result the **foreground region** is often missing or only partially detected.<br>
+
+- CrossEntropyLoss (Naive Method)
+  Works badly for two reasons:<br>
+    1)highly unbalanced label distribution<br>
+    2)per-pixel intrinsic issue of cross entropy loss<br>
+    As a result, cross entropy loss **only considers loss in a micro sense** rather than considering it globally, which is not enoujgh for image level prediction.<br>
+    
+- Dice Loss
+  Originates from [Sørensen–Dice coefficient](https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient), which is a statistic developed in 1940s to gauge the similarity between two samples.It was brought to computer vision community by [Milletari](https://arxiv.org/pdf/1606.04797.pdf) et al.in 2016 for 3D medical image segmentation.<br>
+  Below shows the equation of Dice coefficient, in which *p* and *q* represent pairs of corresponding pixel values of prediction and ground truth, respectively. Its quantity range between 0 and 1 which we aim to maximize.<br>
+![dice_loss](/unet_explanation/Dice_loss.png) <br>
+  Dice loss considers the loss information **both locally and globally**, which is critical for high accuracy.
+  
+  
+
+
+
+# references
+- [Understanding Dice Loss for Crisp Boundary Detection](https://towardsdatascience.com/understanding-dice-loss-for-crisp-boundary-detection-bb30c2e5f62b)

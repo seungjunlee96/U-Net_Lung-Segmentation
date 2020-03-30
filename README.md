@@ -1,6 +1,16 @@
 # U-Net_Lung-Segmentation
-Application of U-Net in Lung Segmentation
+Application of U-Net in Lung Segmentation<br>
+![LungSeg](./Figure_1.png)
+<br>
+# Dataset
+Download Dataset from [Chest Xray Masks and Labels Pulmonary Chest X-Ray Defect Detection](https://www.kaggle.com/nikhilpandey360/chest-xray-masks-and-labels)
 
+```
+  /data
+    /data/Lung Segmentation
+      /data/Lung Segmentation/CXR_Png
+      /data/Lung Segmentation/masks
+```
 
 ## U-Net: Convolutional Networks for Biomedical Image Segmentation 
 Writers: Olaf Ronneberger, Philipp Fischer, and Thomas Brox <br>

@@ -1,6 +1,6 @@
 # U-Net_Lung-Segmentation
 Application of U-Net in Lung Segmentation<br>
-This Implementation Achived **96% accuracy** in Lung Segmentation with U-Net
+This Implementation Achived **97% accuracy** in Lung Segmentation with U-Net
 ![LungSeg](./Figure_1.png)
 <br>
 # Dataset

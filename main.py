@@ -24,7 +24,7 @@ def train_and_validate(net,criterion, optimizer, scheduler, dataloader,device,ep
         # net.load_state_dict(torch.load(load_model))
         checkpoint = torch.load(load_model)
         net.load_state_dict(checkpoint['model_state_dict'])
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         start_epoch = checkpoint['epoch']
         loss = checkpoint['loss']
 
@@ -32,14 +32,16 @@ def train_and_validate(net,criterion, optimizer, scheduler, dataloader,device,ep
     history = {'train':{'epoch':[], 'loss' : [] , 'acc':[]},
                'val'  :{'epoch':[], 'loss' : [] , 'acc':[]}}
 
-    best_acc = 0.0
+    best_acc = 0.98
     best_loss = 10000000000
     start = time.time()
     for epoch in range(epochs):
         if load_model:
             epoch += start_epoch
+            epochs += start_epoch
         print("-" * 30)
-        print(f"Epoch {epoch + 1}/{epochs} learning_rate : {scheduler.get_lr()[0]}")
+        print(f"Epoch {epoch + 1}/{epochs}")
+        # print(f"Epoch {epoch + 1}/{epochs} learning_rate : {scheduler.get_lr()[0]}")
 
         since = time.time()
 
@@ -57,7 +59,8 @@ def train_and_validate(net,criterion, optimizer, scheduler, dataloader,device,ep
             for batch_idx, sample in enumerate(dataloader[phase]):
                 imgs , true_masks = sample['image'],sample['mask']
                 imgs = imgs.to(device=device, dtype=torch.float32)
-                mask_type = torch.float32 if net.n_classes == 1 else torch.long
+                # mask_type = torch.float32 if net.n_classes == 1 else torch.long
+                mask_type = torch.float32
                 true_masks = true_masks.to(device=device, dtype=mask_type)
 
                 # zero the parameter gradients
@@ -86,27 +89,28 @@ def train_and_validate(net,criterion, optimizer, scheduler, dataloader,device,ep
                     # print(f'Batch {batch_idx}/{len(dataloader[phase])} Loss {loss.item()} Acc {running_acc}')
                     # print(f'Batch {batch_idx+1}/{len(dataloader[phase])} Loss {loss.item()}')
 
-            if phase == 'train':
-                scheduler.step()
 
             """ statistics """
             epoch_loss = running_loss / dataset_size
             epoch_acc = running_correct / dataset_size
             print('{} Loss {:.5f}\n{} Acc {:.2f}'
                   .format(phase, epoch_loss,phase,epoch_acc))
-            if phase == 'val' and epoch_loss < best_loss:
-                best_loss = epoch_loss
+            if phase == 'val' and epoch_acc > best_acc:
+                best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(net.state_dict())
                 torch.save({
                     'epoch':epoch + 1,
                     'model_state_dict':best_model_wts,
                     'optimizer_state_dict': optimizer.state_dict(),
-                    'loss': loss
+                    'best_acc': best_acc
                 },os.path.join(os.getcwd(),'checkpoint/best_checkpoint[epoch_{}].pt'.format(epoch + 1)))
                 print("Achived best result! save checkpoint.")
+                print("val acc = ", best_acc)
             history[phase]['epoch'].append(epoch)
             history[phase]['loss'].append(epoch_loss)
             history[phase]['acc'].append(epoch_acc)
+
+        scheduler.step(history['val']['acc'][-1])
 
         time_elapsed = time.time() - since
         print("One Epoch Complete in {:.0f}m {:.0f}s".format(time_elapsed//60 , time_elapsed%60))
@@ -156,12 +160,12 @@ def main():
 
     # set transforms for dataset
     import torchvision.transforms as transforms
-    from my_transforms import *
+    from my_transforms import RandomHorizontalFlip,RandomVerticalFlip,ColorJitter,GrayScale,Resize,ToTensor
     train_transforms = transforms.Compose([
         #Data Augmentations
         RandomHorizontalFlip(),
         RandomVerticalFlip(),
-        ColorJitter(),
+        ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5),
         #shear
         #rotation
         #scale
@@ -201,15 +205,16 @@ def main():
 
     # learning rate scheduler
     from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau
-    scheduler = StepLR(optimizer, step_size = 5 , gamma = 0.7)
+    # scheduler = StepLR(optimizer, step_size = 3 , gamma = 0.8)
     ## option 2.
-    # scheduler = ReduceLROnPlateau(optimizer, 'min' if model.n_classes > 1 else 'max', patience=2)
+    scheduler = ReduceLROnPlateau(optimizer, 'min', patience=3)
 
-    # set criterion
-    if model.n_classes > 1:
-        criterion = nn.CrossEntropyLoss()
-    else:
-        criterion = nn.BCEWithLogitsLoss()
+    # # set criterion
+    # if model.n_classes > 1:
+    #     criterion = nn.CrossEntropyLoss()
+    # else:
+    #     criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.BCEWithLogitsLoss()
 
     train_and_validate(net=model,criterion=criterion,optimizer=optimizer,dataloader=dataloader,device=device,epochs=args.epochs, scheduler=scheduler,load_model=checkpoint_path)
     # test()

@@ -2,7 +2,6 @@ import torchvision.transforms as transforms
 import random
 import torch.nn.functional as F
 import numpy as np
-from torchvision.transforms import R
 #transforms = {Resize, ToTensor, RandomCrop, ToPILImage}
 
 class GrayScale(object):
@@ -25,7 +24,7 @@ class Resize(object):
         Resize = transforms.Resize((self.img_size,self.img_size))
         sample['image'],sample['mask'] = Resize(img), Resize(mask)
         return sample
-[docs]class RandomRotation(object):
+class RandomRotation(object):
     """Rotate the image by angle.
 
     Args:

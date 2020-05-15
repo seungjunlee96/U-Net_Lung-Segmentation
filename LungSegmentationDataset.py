@@ -9,25 +9,6 @@ from PIL import Image
 
 from skimage import io
 
-from albumentations import (
-    PadIfNeeded,
-    HorizontalFlip,
-    VerticalFlip,
-    CenterCrop,
-    Crop,
-    Compose,
-    Transpose,
-    RandomRotate90,
-    ElasticTransform,
-    GridDistortion,
-    OpticalDistortion,
-    RandomSizedCrop,
-    OneOf,
-    CLAHE,
-    RandomBrightnessContrast,
-    RandomGamma
-)
-
 
 # torch.utils.data.Dataset is an abstract class representing a dataset
 class LungSegDataset(Dataset): # inherit from torch.utils.data.Dataset

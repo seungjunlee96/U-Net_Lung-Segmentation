@@ -91,8 +91,7 @@ As a result the **foreground region** is often missing or only partially detecte
 ![dice_loss](/unet_explanation/Dice_loss.png) <br>
   Dice loss considers the loss information **both locally and globally**, which is critical for high accuracy.
   
-  
-
+If you are interested in segmentation loss functions much in depth, you will find this repository helpful : https://github.com/JunMa11/SegLoss
 
 
 # references
